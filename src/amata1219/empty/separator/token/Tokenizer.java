@@ -92,16 +92,16 @@ public class Tokenizer {
 
 			String[] lines = source.split(LINE_FEED_CODE);
 
-			int indexOfTheLine = index - IntStream.range(0, line - 1)
+			int indexOfProblematicLine = index - IntStream.range(0, line - 1)
 					.map(i -> lines[i].length())
 					.sum();
 
 			String indicator = Stream.generate(() -> " ")
-					.limit(indexOfTheLine)
+					.limit(indexOfProblematicLine)
 					.collect(Collectors.joining()) + "^";
 
 			printlnForEachText(
-				"at (line, index) = (" + line + ", " + index + ")",
+				"at (line, index) = (" + line + ", " + indexOfProblematicLine + ")",
 				lines[line],
 				indicator
 			);
