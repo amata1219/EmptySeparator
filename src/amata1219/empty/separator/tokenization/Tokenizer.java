@@ -1,4 +1,4 @@
-package amata1219.empty.separator.token;
+package amata1219.empty.separator.tokenization;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,13 +35,14 @@ public class Tokenizer {
 		"T",
 		"F",
 		"if",
-		"else",
 		"elif",
+		"else",
 		"for",
 		"while",
 		"loop",
-		"skip",
-		"break"
+		"return",
+		"break",
+		"skip"
 	));
 
 	private static final String LINE_FEED_CODE = "\r\n";
@@ -53,9 +54,9 @@ public class Tokenizer {
 		this.source = source;
 	}
 
-	public Token tokenize(){
-		Token head = new Token(null, null);
-		Token current = head;
+	public Token<?> tokenize(){
+		Token<?> head = new Token<>(null, null, null);
+		Token<?> current = head;
 
 		label: while(index < source.length()){
 			if(Character.isWhitespace(source.charAt(index))){
@@ -64,47 +65,48 @@ public class Tokenizer {
 			}
 
 			if(source.startsWith(LINE_FEED_CODE, index)){
-				current = new ReservedWordToken(current, LINE_FEED_CODE);
+				current = new Token<>(TokenType.RESERVED_WORD, LINE_FEED_CODE, current);
 				index += 2;
 				line++;
 				continue;
 			}
 
 			for(String reserved : RESERVED_WORDS) if(source.startsWith(reserved, index)){
-				current = new ReservedWordToken(current, reserved);
+				current = new Token<>(TokenType.RESERVED_WORD, reserved, current);
 				index += reserved.length();
 				continue label;
 			}
 
 			String identifier = conditionallySliceSource(Character::isAlphabetic);
 			if(identifier != null){
-				current = new IdentifierToken(current, identifier);
+				current = new Token<>(TokenType.IDENTIFIER, identifier, current);
 				index += identifier.length();
 				continue;
 			}
 
 			String number = conditionallySliceSource(Character::isDigit);
 			if(number != null){
-				current = new NumericToken<Integer>(current, Integer.parseInt(number));
+				current = new Token<>(TokenType.NUMBER, number, current);
 				index += number.length();
 				continue;
 			}
 
 			String[] lines = source.split(LINE_FEED_CODE);
 
-			int indexOfProblematicLine = index - IntStream.range(0, line - 1)
+			int problematicLineIndex = index - IntStream.range(0, line - 1)
 					.map(i -> lines[i].length())
 					.sum();
 
 			String indicator = Stream.generate(() -> " ")
-					.limit(indexOfProblematicLine)
+					.limit(problematicLineIndex)
 					.collect(Collectors.joining()) + "^";
 
-			printlnForEachText(
-				"at (line, index) = (" + line + ", " + indexOfProblematicLine + ")",
+			Arrays.asList(
 				lines[line],
-				indicator
-			);
+				indicator,
+				"at (line, index) = (" + line + ", " + problematicLineIndex + ")"
+			)
+			.forEach(System.out::println);
 		}
 
 		return head.next();
@@ -114,10 +116,6 @@ public class Tokenizer {
 		int current = index;
 		while(current < source.length() && condition.test(source.charAt(current))) current++;
 		return current == index ? null : source.substring(index, current);
-	}
-
-	private void printlnForEachText(String... texts){
-		for(String text : texts) System.out.println(text);
 	}
 
 }

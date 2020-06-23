@@ -1,4 +1,4 @@
-package amata1219.empty.separator.token;
+package amata1219.empty.separator.tokenization;
 
 public enum TokenType {
 
