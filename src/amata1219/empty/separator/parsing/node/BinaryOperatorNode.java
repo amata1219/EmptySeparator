@@ -1,4 +1,4 @@
-package amata1219.empty.separator.parsing;
+package amata1219.empty.separator.parsing.node;
 
 public class BinaryOperatorNode extends Node {
 

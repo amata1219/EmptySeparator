@@ -1,4 +1,4 @@
-package amata1219.empty.separator.parsing;
+package amata1219.empty.separator.parsing.node;
 
 public enum NodeType {
 
@@ -19,8 +19,8 @@ public enum NodeType {
 	LESS_THAN_OR_EQUAL,
 
 	IF,
-	NORMAL_FOR,
-	INTERVAL_FOR,
+	FOR,
+	FOR_EACH,
 	WHILE,
 	LOOP,
 	RETURN,
@@ -30,6 +30,6 @@ public enum NodeType {
 
 	VARIABLE,
 	FUNCTION_DECLARER,
-	CALLING_FUNCTION,
+	FUNCTION_CALL;
 
 }
